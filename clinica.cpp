@@ -85,30 +85,23 @@ class Paciente {
         pacientes.push_back(p);
     }
 
-    void excluir(){
+    void alterar(Paciente &paciente, string nome){
+        paciente.setNomePaciente(nome);
 
     }
 
-    void alterar(){
-
+    void alterar(Paciente &paciente, int dia, int mes, int ano){
+        //paciente.getDtNascimento().setDia(data.getDia());
+        //paciente.getDtNascimento().setMes(data.getMes());
+        //paciente.getDtNascimento().setAno(data.getAno());
+        paciente.alterarDataNascimento(dia, mes, ano);
     }
 
-    void listar(vector<Paciente> pacientes){
-        for(auto paciente : pacientes){
-           /*  cout << "-----------------------" << endl;
-            cout << "Nome: " << paciente.getNomePaciente() << endl;
-            cout << "CPF: " << paciente.getCpf() << endl;
-            cout << "Data de Nascimento: " << paciente.getDtNascimento().getDia();
-            cout <<" / " paciente.getDtNascimento().getMes();
-            cout << " / " paciente.getDtNascimento().getAno() << endl;; */
-
-        }
+    void alterarDataNascimento(int dia, int mes, int ano) {
+        dtNascimento.setDia(dia);
+        dtNascimento.setMes(mes);
+        dtNascimento.setAno(ano);
     }
-
-    void localizarPorCpf(){
-        cout << "Em construcao... " << endl;
-    }
-
 
 };
 
@@ -379,7 +372,68 @@ int main(){
                     break;
 
                     case 3:
-                        { //Implementação aqui
+                        { 
+                            system("cls");
+                            string cpfProcurado;
+                            int indice;
+                            int escolha;
+                            int dia, mes, ano;
+                            string nome;
+
+                            cout << "------- ALTERANDO PACIENTE -------" << endl;
+                            cout << "Informe o CPF do paciente: " << endl;
+                            getline(cin, cpfProcurado);
+                            indice = localizarPorCpf(pacientes, cpfProcurado);
+                            if(indice != -1){
+                                cout << "Nome: " << pacientes[indice].getNomePaciente() << endl;
+                                cout << "CPF: " << pacientes[indice].getCpf() << endl;
+                                cout << "Data de Nascimento: " << pacientes[indice].getDtNascimento().getDia();
+                                cout << " / " << pacientes[indice].getDtNascimento().getMes();
+                                cout << " / " << pacientes[indice].getDtNascimento().getAno() << endl;
+
+                                cout << "----------------------------------------------------" << endl;
+
+                                cout << "Deseja alterar o nome desse paciente: 1-SIM / 2-NAO" << endl;
+                                cin >> escolha;
+                                cin.ignore();
+
+                                if(escolha == 1){
+                                    cout << "Informe o nome do paciente: " << endl;
+                                    getline(cin, nome);
+                                    pacientes[indice].alterar(pacientes[indice], nome);
+                                    cout << "Nome alterado com sucesso!" << endl;
+                                }else if(escolha != 1 && escolha != 2){
+                                    cout << "Opcao invalida!" << endl;
+                                }
+
+                                cout << "Deseja alterar a data de nascimento  desse paciente: 1-SIM / 2-NAO" << endl;
+                                cin >> escolha;
+                                cin.ignore();
+
+                                if(escolha == 1){
+                                    cout << "Informe o dia do seu nascimento: " << endl;
+                                    cin >> dia;
+                                    cout << "Informe o mes do seu nascimento: " << endl;
+                                    cin >> mes;
+                                    cout << "Informe o ano do seu nascimento: " << endl;
+                                    cin >> ano;
+
+                                    if(verificacao.verificacaoData(dia, mes, ano)){
+                                        
+                                        pacientes[indice].alterar(pacientes[indice],dia, mes, ano );
+                                        cout << "Data alterada com sucesso!" << endl;
+                                    }else{
+                                        cout << "Data invalida..." << endl;
+                                    }
+
+                                }else if(escolha != 1 && escolha != 2){
+                                    cout << "Opcao invalida!" << endl;
+                                }
+
+                            }else{
+                                cout << "Paciente nao encontrado..." << endl;
+                            }
+                            cout << "----------------------------------" << endl;
 
                         }
                     break;
@@ -404,8 +458,6 @@ int main(){
                         string cpfProcurado;
                         int indice;
 
-                        //usar o metodo da própria classe 
-
                         cout << "------- LOCALIZAR PACIENTE -------" << endl;
                         cout << "Informe o CPF do paciente: " << endl;
                         getline(cin, cpfProcurado);
@@ -429,7 +481,6 @@ int main(){
                         cout << "Opcao invalida! " << endl;
                     break;
                 }
-
 
             }while(opcaoSubMenu != 0);
             break;
