@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cctype>
 
 using namespace std;
 
@@ -54,7 +55,7 @@ class Paciente {
 
     public:
     //Construtor
-     Paciente(string _cpf, string _nomePaciente, Data _dtNascimento)
+     Paciente(string _nomePaciente, string _cpf,  Data _dtNascimento)
         : cpf(_cpf), nomePaciente(_nomePaciente), dtNascimento(_dtNascimento) {}
 
     //Setters
@@ -148,6 +149,112 @@ class Medico {
     
 };
 
+class VerificaDados{
+    private:
+    int verificaTamanhoCpf;
+    int verificaDigito;
+    int verificaCpfCadastrado;
+    int verificaData;
+
+    public:
+    int getVerificaTamanhoCpf(){
+        return this->verificaTamanhoCpf;
+    }
+
+    int getVerificaData(){
+        return this->verificaData;
+    }
+
+    int getVerificaDigito(){
+        return this->verificaDigito;
+    }
+
+    int getVerificaCpfCadastrado(){
+        return this->verificaCpfCadastrado;
+    }
+
+    VerificaDados(){
+
+    }
+
+    int verificacaoCpf(vector<Paciente> pacientes, string cpf){
+        // 1 - Verifica o tamanho do CPF
+        if(cpf.length() == 11){
+            this->verificaTamanhoCpf = 1;
+        }else{
+            this->verificaTamanhoCpf = 0;
+        }
+
+        // 2 - Verifica se so foram passados numeros
+        for(int i = 0; i < cpf.length(); i++){
+            if(isdigit(cpf[i])){
+                this->verificaDigito = 1;
+            }else{
+                this->verificaDigito = 0;
+                break;
+            }
+        }
+
+        //3 - Verifica se já possui cpf cadastrado
+        for(int i = 0; i < pacientes.size() ; i++){
+            if(pacientes[i].getCpf() == cpf){
+                this->verificaCpfCadastrado = 0;
+                break;
+            }else{
+                this->verificaCpfCadastrado = 1;
+            }
+        }
+
+        //Retorna um feedback se tá tudo certo
+        if(this->verificaTamanhoCpf && this->verificaDigito && this->verificaCpfCadastrado){
+            return 1;
+        }
+        return 0;
+       
+    }
+
+    int verificacaoData(int dia, int mes, int ano){
+    if (ano >= 1900 && ano <= 2023) {
+        if (mes >= 1 && mes <= 12) {
+            if ((mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12) && (dia >= 1 && dia <= 31)) {
+             this->verificaData = 1;
+            } else if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && (dia >= 1 && dia <= 30)) {
+                this->verificaData = 1;
+            } else if (mes == 2) {
+                if ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0)) {
+                    if (dia >= 1 && dia <= 29) {
+                        this->verificaData = 1;
+                    } else {
+                        this->verificaData = 0;
+                    }
+                } else {
+                    if (dia >= 1 && dia <= 28) {
+                        this->verificaData = 1;
+                    } else {
+                        this->verificaData = 0;
+                    }
+                }
+            } else {
+                this->verificaData = 0;
+            }
+        } else {
+            this->verificaData = 0;
+        }
+    } else {
+        this->verificaData = 0;
+    }
+
+        //Retorna o feedback
+        if(this->verificaData){
+            return 1;
+        }
+
+        return 0;
+    }
+
+
+};
+
 int localizarPorCpf(vector<Paciente> pacientes, string cpfProcurado){
     for(int i = 0; i<pacientes.size(); i++){
         if(pacientes[i].getCpf() == cpfProcurado){
@@ -163,9 +270,8 @@ int main(){
     int opcaoSubMenu;
     vector <Paciente> pacientes;
     vector <Medico> medicos;
+    VerificaDados verificacao;
     
-
-    //cout << "Tamanaho de pacientes: " << pacientes.size() << endl;
 
     do{
         cout << ">>> BEM-VINDO(A) A CLINICA SEM DODOI <<<" << endl;
@@ -197,12 +303,56 @@ int main(){
 
                     case 1:
                         {   system("cls");
-                            Data d(10,02,1999);
-                            Paciente paciente("0", "Taynara", d);
-                            Paciente paciente1("1", "Alessandro", d);
-                            paciente.incluir(pacientes, paciente);
-                            paciente.incluir(pacientes, paciente1);
-                            cout << "Tamanaho de pacientes: " << pacientes.size() << endl;
+                            string nome, cpf;
+                            int dia, mes, ano;
+
+                            cout << "------- INSERIR PACIENTE -------" << endl;
+                            cout << "Informe o nome do paciente: " << endl;
+                            getline(cin,nome);
+                            cout << "Informe o CPF do paciente (apenas digitos): " << endl;
+                            getline(cin,cpf);
+                            /*
+                                Verificação do CPF:
+                                1 - Verificar se o CPF tem 11 digitos, considerando
+                                    que seja passando apenas números.
+                                2 - Verificar se foram passandos apenas digitos.
+                                3 - Verificar se o passando já está inserido.
+                            */
+
+                            if(verificacao.verificacaoCpf(pacientes, cpf)){
+                                cout << "Informe o dia do seu nascimento: " << endl;
+                                cin >> dia;
+                                cout << "Informe o mes do seu nascimento: " << endl;
+                                cin >> mes;
+                                cout << "Informe o ano do seu nascimento: " << endl;
+                                cin >> ano;
+
+                                if(verificacao.verificacaoData(dia, mes, ano)){
+                                    Data data(dia, mes, ano);
+                                    Paciente paciente(nome, cpf, data);
+                                    paciente.incluir(pacientes, paciente);
+                                    system("cls");
+                                    cout << "Paciente inserido com sucesso!" << endl;
+                                }else{
+                                    cout << "Data invalida..." << endl;
+                                }
+
+                            }else{
+                                //Mostra um feedback do que foi preenchido errado
+                                if(!verificacao.getVerificaTamanhoCpf()){
+                                    cout << "1 - CPF com digitos a mais ou a menos" << endl;
+                                }
+
+                                if(!verificacao.getVerificaDigito()){
+                                    cout << "2 - CPF com digitos invalidos" << endl;
+                                }
+
+                                if(!verificacao.getVerificaCpfCadastrado()){
+                                    cout << "3 - CPF ja cadastrado" << endl;
+                                }
+                            }
+                            cout << "----------------------------------" << endl;
+                            
                         }
                     break;
 
@@ -229,6 +379,9 @@ int main(){
                     break;
 
                     case 3:
+                        { //Implementação aqui
+
+                        }
                     break;
 
                     case 4:
