@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -104,7 +105,7 @@ class Paciente {
     }
 
     void localizarPorCpf(){
-
+        cout << "Em construcao... " << endl;
     }
 
 
@@ -147,6 +148,15 @@ class Medico {
     
 };
 
+int localizarPorCpf(vector<Paciente> pacientes, string cpfProcurado){
+    for(int i = 0; i<pacientes.size(); i++){
+        if(pacientes[i].getCpf() == cpfProcurado){
+            return i;
+        }
+    }
+    return -1;
+}
+
 int main(){
     
     int opcao;
@@ -163,6 +173,7 @@ int main(){
         cout << "[2] MEDICOS " << endl;
         cout << "[0] SAIR " << endl;
         cin >> opcao;
+        cin.ignore();
 
         switch(opcao){
             case 0:
@@ -178,6 +189,7 @@ int main(){
                 cout << "[5] LOCALIZAR" << endl;
                 cout << "[0] SAIR" << endl;
                 cin >> opcaoSubMenu;
+                cin.ignore();
 
                 switch(opcaoSubMenu){
                     case 0:
@@ -186,13 +198,34 @@ int main(){
                     case 1:
                         {   system("cls");
                             Data d(10,02,1999);
-                            Paciente paciente("0000", "0000", d);
+                            Paciente paciente("0", "Taynara", d);
+                            Paciente paciente1("1", "Alessandro", d);
                             paciente.incluir(pacientes, paciente);
+                            paciente.incluir(pacientes, paciente1);
                             cout << "Tamanaho de pacientes: " << pacientes.size() << endl;
                         }
                     break;
 
                     case 2:
+                        {
+                            system("cls");
+                            string cpfProcurado;
+                            int indice;
+
+                            cout << "------- EXCLUIR PACIENTE -------" << endl;
+                            cout << "Informe o CPF do paciente: " << endl;
+                            getline(cin, cpfProcurado);
+                            indice = localizarPorCpf(pacientes, cpfProcurado);
+
+                            if(indice != -1){
+                                cout << "Paciente de nome: " << pacientes[indice].getNomePaciente() << " excluido." << endl;
+                                pacientes.erase(pacientes.begin() + indice);
+                            }else{
+                                cout << "Paciente nao encontrado..." << endl;
+                            }
+                             cout << "----------------------------------" << endl;
+
+                        }
                     break;
 
                     case 3:
@@ -213,6 +246,29 @@ int main(){
                     break;
 
                     case 5:
+                        {
+                        system("cls");
+                        string cpfProcurado;
+                        int indice;
+
+                        //usar o metodo da própria classe 
+
+                        cout << "------- LOCALIZAR PACIENTE -------" << endl;
+                        cout << "Informe o CPF do paciente: " << endl;
+                        getline(cin, cpfProcurado);
+                        indice = localizarPorCpf(pacientes, cpfProcurado);
+                        if(indice != -1){
+                            cout << "Nome: " << pacientes[indice].getNomePaciente() << endl;
+                            cout << "CPF: " << pacientes[indice].getCpf() << endl;
+                            cout << "Data de Nascimento: " << pacientes[indice].getDtNascimento().getDia();
+                            cout << " / " << pacientes[indice].getDtNascimento().getMes();
+                            cout << " / " << pacientes[indice].getDtNascimento().getAno() << endl;
+                        }else{
+                            cout << "Paciente nao encontrado..." << endl;
+                        }
+                        cout << "----------------------------------" << endl;
+
+                        }
                     break;
 
                     default:
