@@ -113,6 +113,8 @@ class Medico {
     string especialidade;
 
     public:
+    Medico(string _nomeMedico , string _crm, string _especialidade)
+        : crm(_crm), nomeMedico(_nomeMedico), especialidade(_especialidade) {}
 
     //Setters
     void setCrm(string _crm){
@@ -139,6 +141,18 @@ class Medico {
     string getEspecialidade(){
         return this->especialidade;
     }
+
+    void incluir(vector<Medico> &medicos, Medico medico){
+        medicos.push_back(medico);
+    }
+
+    void alterarNomeMedico(Medico &medico, string nome){
+        medico.setNomeMedico(nome);
+    }
+
+    void alterarEspecialidadeMedico(Medico &medico, string especialidade){
+        medico.setEspecialidade(especialidade);
+    }
     
 };
 
@@ -148,6 +162,7 @@ class VerificaDados{
     int verificaDigito;
     int verificaCpfCadastrado;
     int verificaData;
+    int verificaCrm;
 
     public:
     int getVerificaTamanhoCpf(){
@@ -164,6 +179,10 @@ class VerificaDados{
 
     int getVerificaCpfCadastrado(){
         return this->verificaCpfCadastrado;
+    }
+
+    int getVerificaCrmCadastrado(){
+        return this->verificaCrm;
     }
 
     VerificaDados(){
@@ -245,12 +264,30 @@ class VerificaDados{
         return 0;
     }
 
+    int vericacaoCrm(vector<Medico> medicos, string crm){
+        for(int i = 0; i<medicos.size(); i++){
+            if(medicos[i].getCrm() == crm){
+                return 0;
+            }
+        }
+        return 1;
+    }
+
 
 };
 
 int localizarPorCpf(vector<Paciente> pacientes, string cpfProcurado){
     for(int i = 0; i<pacientes.size(); i++){
         if(pacientes[i].getCpf() == cpfProcurado){
+            return i;
+        }
+    }
+    return -1;
+}
+
+int localizarPorCrm(vector<Medico> medicos, string crmProcurado){
+    for(int i = 0; i<medicos.size(); i++){
+        if(medicos[i].getCrm() == crmProcurado){
             return i;
         }
     }
@@ -268,8 +305,8 @@ int main(){
 
     do{
         cout << ">>> BEM-VINDO(A) A CLINICA SEM DODOI <<<" << endl;
-        cout << "[1] PACIENTES " << endl;
-        cout << "[2] MEDICOS " << endl;
+        cout << "[1] GESTAO DE PACIENTES " << endl;
+        cout << "[2] GESTAO DE MEDICOS " << endl;
         cout << "[0] SAIR " << endl;
         cin >> opcao;
         cin.ignore();
@@ -309,7 +346,7 @@ int main(){
                                 1 - Verificar se o CPF tem 11 digitos, considerando
                                     que seja passando apenas números.
                                 2 - Verificar se foram passandos apenas digitos.
-                                3 - Verificar se o passando já está inserido.
+                                3 - Verificar se o paciente já está inserido.
                             */
 
                             if(verificacao.verificacaoCpf(pacientes, cpf)){
@@ -404,6 +441,7 @@ int main(){
                                     cout << "Nome alterado com sucesso!" << endl;
                                 }else if(escolha != 1 && escolha != 2){
                                     cout << "Opcao invalida!" << endl;
+                                    break;
                                 }
 
                                 cout << "Deseja alterar a data de nascimento  desse paciente: 1-SIM / 2-NAO" << endl;
@@ -419,7 +457,6 @@ int main(){
                                     cin >> ano;
 
                                     if(verificacao.verificacaoData(dia, mes, ano)){
-                                        
                                         pacientes[indice].alterar(pacientes[indice],dia, mes, ano );
                                         cout << "Data alterada com sucesso!" << endl;
                                     }else{
@@ -495,24 +532,140 @@ int main(){
                 cout << "[5] LOCALIZAR" << endl;
                 cout << "[0] SAIR" << endl;
                 cin >> opcaoSubMenu;
+                cin.ignore();
 
                 switch(opcaoSubMenu){
                     case 0:
                     break;
 
                     case 1:
+                        {
+                            system("cls");
+                            string nomeMedico, crm, especialidade ;
+
+                            cout << "------- INSERIR MEDICO -------" << endl;
+                            cout << "Informe o nome do Medico: " << endl;
+                            getline(cin,nomeMedico);
+                            cout << "Informe o CRM do medico" << endl;
+                            getline(cin,crm);
+                            cout << "Informe a especialidade do medico" << endl;
+                            getline(cin,especialidade);
+
+                            if(verificacao.vericacaoCrm(medicos, crm)){
+                                Medico novoMedico (nomeMedico, crm, especialidade);
+                                novoMedico.incluir(medicos, novoMedico);
+                                system("cls");
+                                cout << "Medico inserido com sucesso!" << endl;
+                            }else{
+                                cout << "Medico ja inserido..." << endl;
+                            }
+                        }
                     break;
 
                     case 2:
+                        {
+                            system("cls");
+                            string crmProcurado;
+                            int indice;
+
+                            cout << "------- EXCLUIR PACIENTE -------" << endl;
+                            cout << "Informe o crm do paciente: " << endl;
+                            getline(cin, crmProcurado);
+                            indice = localizarPorCrm(medicos, crmProcurado);
+
+                            if(indice != -1){
+                                cout << "Medico de nome: " << medicos[indice].getNomeMedico() << " excluido." << endl;
+                                medicos.erase(medicos.begin() + indice);
+                            }else{
+                                cout << "Paciente nao encontrado..." << endl;
+                            }
+                             cout << "----------------------------------" << endl;
+                        }
                     break;
 
                     case 3:
+                        {
+                            system("cls");
+                            string crmProcurado, nome, especialidade;
+                            int indice, escolha;
+
+                            cout << "------- ALTERANDO MEDICO -------" << endl;
+                            cout << "Informe o CRM do MEDICO: " << endl;
+                            getline(cin, crmProcurado);
+                            indice = localizarPorCrm(medicos, crmProcurado);
+                            if(indice != -1){
+                                cout << "Nome: " << medicos[indice].getNomeMedico() << endl;
+                                cout << "CRM: " << medicos[indice].getCrm() << endl;
+                                cout << "Especialidade: " << medicos[indice].getEspecialidade() << endl;
+
+                                cout << "----------------------------------------------------" << endl;
+
+                                cout << "Deseja alterar o nome desse medico: 1-SIM / 2-NAO" << endl;
+                                cin >> escolha;
+                                cin.ignore();
+
+                                if(escolha == 1){
+                                    cout << "Informe o nome do medico: " << endl;
+                                    getline(cin, nome);
+                                    medicos[indice].alterarNomeMedico(medicos[indice], nome);
+                                    cout << "Nome alterado com sucesso!" << endl;
+                                }else if(escolha != 1 && escolha != 2){
+                                    cout << "Opcao invalida!" << endl;
+                                    break;
+                                }
+
+                                cout << "Deseja alterar a especilidade desse medico: 1-SIM / 2-NAO" << endl;
+                                cin >> escolha;
+                                cin.ignore();
+
+                                if(escolha == 1){
+                                    cout << "Informe a especialidade: " << endl;
+                                    getline(cin, especialidade);
+                                    medicos[indice].alterarEspecialidadeMedico(medicos[indice], especialidade);
+                                    cout << "Especialidade alterada com sucesso!" << endl;
+                                }else if(escolha != 1 && escolha != 2){
+                                    cout << "Opcao invalida!" << endl;
+                                }
+
+                            }else{
+                                cout << "Paciente nao encontrado..." << endl;
+                            }
+                            cout << "----------------------------------" << endl;
+                        }
                     break;
 
                     case 4:
+                         system("cls");
+                         cout << "------- LISTANDO MEDICOS -------" << endl;
+                        for(auto medico : medicos){
+                            cout << "----------------------------------" << endl;
+                            cout << "Nome: " << medico.getNomeMedico() << endl;
+                            cout << "CRM: " << medico.getCrm() << endl;
+                            cout << "Especialidade: " << medico.getEspecialidade() << endl;
+                        }
+                         cout << "----------------------------------" << endl;
                     break;
 
                     case 5:
+                        {
+                            system("cls");
+                            string crmProcurado;
+                            int indice;
+
+                            cout << "------- LOCALIZAR Medico -------" << endl;
+                            cout << "Informe o CRM do Medico: " << endl;
+                            getline(cin, crmProcurado);
+                            indice = localizarPorCrm(medicos, crmProcurado);
+                            if(indice != -1){
+                                cout << "----------------------------------" << endl;
+                                cout << "Nome: " << medicos[indice].getNomeMedico() << endl;
+                                cout << "CRM: " << medicos[indice].getCrm() << endl;
+                                cout << "Especialidade: " << medicos[indice].getEspecialidade() << endl;
+                            }else{
+                                cout << "Medico nao encontrado..." << endl;
+                            }
+                            cout << "----------------------------------" << endl;
+                        }
                     break;
 
                     default:
