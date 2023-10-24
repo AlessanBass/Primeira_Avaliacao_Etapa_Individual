@@ -568,8 +568,8 @@ int main(){
                             string crmProcurado;
                             int indice;
 
-                            cout << "------- EXCLUIR PACIENTE -------" << endl;
-                            cout << "Informe o crm do paciente: " << endl;
+                            cout << "------- EXCLUIR MEDICO -------" << endl;
+                            cout << "Informe o crm do medico: " << endl;
                             getline(cin, crmProcurado);
                             indice = localizarPorCrm(medicos, crmProcurado);
 
@@ -577,7 +577,7 @@ int main(){
                                 cout << "Medico de nome: " << medicos[indice].getNomeMedico() << " excluido." << endl;
                                 medicos.erase(medicos.begin() + indice);
                             }else{
-                                cout << "Paciente nao encontrado..." << endl;
+                                cout << "Medico nao encontrado..." << endl;
                             }
                              cout << "----------------------------------" << endl;
                         }
@@ -628,7 +628,7 @@ int main(){
                                 }
 
                             }else{
-                                cout << "Paciente nao encontrado..." << endl;
+                                cout << "Medico nao encontrado..." << endl;
                             }
                             cout << "----------------------------------" << endl;
                         }
